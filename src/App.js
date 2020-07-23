@@ -5,6 +5,10 @@ import vtkFullScreenRenderWindow from "vtk.js/Sources/Rendering/Misc/FullScreenR
 import vtkImageStream from "vtk.js/Sources/IO/Core/ImageStream";
 import SmartConnect from "wslink/src/SmartConnect";
 
+import vtkActor from 'vtk.js/Sources/Rendering/Core/Actor';
+import vtkConeSource from 'vtk.js/Sources/Filters/Sources/ConeSource';
+import vtkMapper from 'vtk.js/Sources/Rendering/Core/Mapper';
+
 import vtkOrientationMarkerWidget from "vtk.js/Sources/Interaction/Widgets/OrientationMarkerWidget";
 import vtkAnnotatedCubeActor from "vtk.js/Sources/Rendering/Core/AnnotatedCubeActor";
 
@@ -26,6 +30,7 @@ class App extends Component {
     const config = { sessionURL: "ws://localhost:9999/ws" };
     const smartConnect = SmartConnect.newInstance({ config });
     smartConnect.onConnectionReady((connection) => {
+      console.log("connection ready");
       // Network
       const session = connection.getSession();
 
@@ -54,6 +59,20 @@ class App extends Component {
     // ----------------------------------------------------------------------------
     // Local rendering setup (as overlay)
     // ----------------------------------------------------------------------------
+
+    // create cone
+    const coneSource = vtkConeSource.newInstance();
+    const actor = vtkActor.newInstance();
+    const mapper = vtkMapper.newInstance();
+
+    actor.setMapper(mapper);
+    mapper.setInputConnection(coneSource.getOutputPort());
+
+    actor.getProperty().setRepresentation(1);
+    actor.getProperty().setColor(0, 0, 0);
+    actor.getProperty().setInterpolationToFlat();
+
+    renderer.addActor(actor);
 
     const axes = vtkAnnotatedCubeActor.newInstance();
     axes.setDefaultStyle({
@@ -120,9 +139,7 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.resolution !== this.props.resolution) {
       this.updatePipeline();
-    }
   }
 
   render() {
