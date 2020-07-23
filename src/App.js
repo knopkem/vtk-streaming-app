@@ -115,11 +115,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.fullScreenRenderer = vtkFullScreenRenderWindow.newInstance({
-      background: [0.157, 0.172, 0.204],
-      rootContainer: this.container.current,
-      containerStyle: {},
-    });
+    this.fullScreenRenderer = vtkFullScreenRenderWindow.newInstance();
     this.updatePipeline();
   }
 
